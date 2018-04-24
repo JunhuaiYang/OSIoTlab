@@ -10,7 +10,7 @@
 #define MEMORY_SIZE 100   //后面2个字符用于标志是否读写完成
 #define READ  buffer[MEMORY_SIZE]  //读标志
 #define WRITE buffer[MEMORY_SIZE+1] //写标志
-#define FLAG  buffer[MEMORY_SIZE+1]  //读写完成标志
+#define FLAG  buffer[MEMORY_SIZE+2]  //读写完成标志
 
 //由于sys/sem.h 与 linux/sem.h有冲突，所以单独定义
 /* arg for semctl system calls. */
@@ -69,7 +69,7 @@ int main(int argc, char const *argv[])
         printf("Create Process failed! \n");
         return -1;
     }
-    else if(p_read > -1)  //确保在父进程中
+    else if(p_read > 0)  //确保在父进程中
     {
         if( (p_write=fork()) == -1)
         {
@@ -88,6 +88,7 @@ int main(int argc, char const *argv[])
     }
 
     wait(NULL); //等待子进程结束
+    wait(NULL);
     printf("Process has finished! \n");
 
     //删除信号灯
@@ -121,18 +122,22 @@ void ReadBuf(const char* fname)
         return ;
     }
 
-    while(READ != WRITE|| FLAG)  //FALG 为读写完成标记
+    //while(FLAG)  //FALG 为读写完成标记
+    while(READ != WRITE)
     {
-        P(full);
         P(mutex);  //互斥锁
+        P(full);
 
+        //READ != WRITE
         p = buffer[(int)READ]; //获取数据
+//        printf("R: %c \n",p);
+//        sleep(1);
         READ = (READ + 1)% MEMORY_SIZE; //+1
         //写入目标文件
         fwrite(&p, sizeof(char), 1, fp);
 
-        V(mutex);
         V(empty);
+        V(mutex);
     }
     fclose(fp);  //关闭文件
 
@@ -158,18 +163,20 @@ void WriteBuf(const char* fname)
         return ;
     }
 
-    while(fread(&c, sizeof(char), 1, fp) != EOF)
+    while(fread(&c, sizeof(char), 1, fp) != 0)
     {
-        P(empty);
         P(mutex);
+        P(empty);
 
         buffer[(int)WRITE] = c;
+        printf("W: %c\n",c);
+//        sleep(1);
         WRITE = (WRITE+1)%MEMORY_SIZE;
 
-        V(mutex);
         V(full);
+        V(mutex);
     }
-    FLAG = 0;  //读取文件结束，标志0
+    //FLAG = 0;  //读取文件结束，标志0
     fclose(fp); //关闭文件
 
     //解绑内存
