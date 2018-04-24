@@ -123,21 +123,27 @@ void ReadBuf(const char* fname)
     }
 
     //while(FLAG)  //FALG 为读写完成标记
-    while(READ != WRITE)
+    while(1)
     {
-        P(mutex);  //互斥锁
+        printf("R %d W %d f %d\n", READ, WRITE, FLAG);
+        if(FLAG == 1 && READ == WRITE);  //初始未开始状态;
+        else if(FLAG == 0 && READ == WRITE)   //已经写入缓冲区完成 && 队列完成
+            break;
+
         P(full);
+        P(mutex);  //互斥锁
 
         //READ != WRITE
+
         p = buffer[(int)READ]; //获取数据
-//        printf("R: %c \n",p);
+        printf("R: %c \n",p);
 //        sleep(1);
         READ = (READ + 1)% MEMORY_SIZE; //+1
         //写入目标文件
         fwrite(&p, sizeof(char), 1, fp);
 
-        V(empty);
         V(mutex);
+        V(empty);
     }
     fclose(fp);  //关闭文件
 
@@ -165,18 +171,18 @@ void WriteBuf(const char* fname)
 
     while(fread(&c, sizeof(char), 1, fp) != 0)
     {
-        P(mutex);
         P(empty);
+        P(mutex);
 
         buffer[(int)WRITE] = c;
         printf("W: %c\n",c);
 //        sleep(1);
         WRITE = (WRITE+1)%MEMORY_SIZE;
 
-        V(full);
         V(mutex);
+        V(full);
     }
-    //FLAG = 0;  //读取文件结束，标志0
+    FLAG = 0;  //读取文件结束，标志0
     fclose(fp); //关闭文件
 
     //解绑内存
