@@ -3,12 +3,11 @@
 #include <pthread.h>
 #include <sys/types.h>
 #include <sys/sem.h>
-//#include<linux/sem.h>  会产生冲突
+//#include<linux/sem.h>
 
 #define COUNT 100
 
 //由于sys/sem.h 与 sys/sem.h有冲突，所以单独定义
-
 /* arg for semctl system calls. */
 union semun {
 	int val;			/* value for SETVAL */

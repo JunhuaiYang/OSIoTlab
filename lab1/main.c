@@ -27,12 +27,12 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-    if((p1=fork()) == -1)  
+    if((p1=fork()) == -1)  //此时要判断是否在父进程中，否则会多产生一个子进程
     {
         printf("Create Child Process 1 failed! \n");
         return -1;
     }
-    else if(p1 > 0) //此时要判断是否在父进程中，否则会多产生一个子进程
+    else if(p1 > 0)
     {
         if((p2=fork()) == -1)  //创建子进程2
         {
