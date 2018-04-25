@@ -174,7 +174,7 @@ void WriteBuf(const char* fname)
         exit(1) ;
     }
 
-    while(fread(&c, sizeof(char), 1, fp) != 0)
+    while(fread(&c, sizeof(char), 1, fp) > 0)  //成功读取到数据
     {
         P(empty);
         P(mutex);
