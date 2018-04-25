@@ -15,11 +15,11 @@
 //由于sys/sem.h 与 linux/sem.h有冲突，所以单独定义
 /* arg for semctl system calls. */
 union semun {
-	int val;			/* value for SETVAL */
-	struct semid_ds *buf;	/* buffer for IPC_STAT & IPC_SET */
-	unsigned short *array;	/* array for GETALL & SETALL */
-	struct seminfo *__buf;	/* buffer for IPC_INFO */
-	void *__pad;
+  int val;			/* value for SETVAL */
+  struct semid_ds *buf;	/* buffer for IPC_STAT & IPC_SET */
+  unsigned short *array;	/* array for GETALL & SETALL */
+  struct seminfo *__buf;	/* buffer for IPC_INFO */
+  void *__pad;
 };
 
 int segment_id;
@@ -35,6 +35,7 @@ void WriteBuf(const char* fname);
 
 int main(int argc, char const *argv[])
 {
+    int error_state = 10;
     //判断参数是否完整
     if(argc != 3)
     {
@@ -87,9 +88,13 @@ int main(int argc, char const *argv[])
         WriteBuf(argv[1]);
     }
 
-    wait(NULL); //等待子进程结束
+    wait(&error_state); //等待子进程结束
     wait(NULL);
-    printf("Process has finished! \n");
+    //printf("%d\n", error_state);
+    if(error_state == 256)   //  ?? 为什么exit（1）是256？
+        printf("发生错误！请检查文件路径是否正确！\n" );
+    else
+        printf("Process has finished! \nFILE copy success!\n");
 
     //删除信号灯
     semctl(full, 0, IPC_RMID);
@@ -119,14 +124,14 @@ void ReadBuf(const char* fname)
     if(fp == NULL)
     {
         printf("文件创建失败！\n");
-        return ;
+        exit(1) ;
     }
 
     //while(FLAG)  //FALG 为读写完成标记
-    while(1)
+    while(1)   //判断条件转移到while内部
     {
-        printf("R %d W %d f %d\n", READ, WRITE, FLAG);
-        if(FLAG == 1 && READ == WRITE);  //初始未开始状态;
+        //printf("R %d W %d f %d\n", READ, WRITE, FLAG);
+        if(FLAG == 1 && READ == WRITE);  //初始未开始状态, 用;继续运行下方代码
         else if(FLAG == 0 && READ == WRITE)   //已经写入缓冲区完成 && 队列完成
             break;
 
@@ -136,7 +141,7 @@ void ReadBuf(const char* fname)
         //READ != WRITE
 
         p = buffer[(int)READ]; //获取数据
-        printf("R: %c \n",p);
+//        printf("R: %c \n",p);
 //        sleep(1);
         READ = (READ + 1)% MEMORY_SIZE; //+1
         //写入目标文件
@@ -166,7 +171,7 @@ void WriteBuf(const char* fname)
     if(fp == NULL)
     {
         printf("文件打开失败！\n");
-        return ;
+        exit(1) ;
     }
 
     while(fread(&c, sizeof(char), 1, fp) != 0)
@@ -175,7 +180,7 @@ void WriteBuf(const char* fname)
         P(mutex);
 
         buffer[(int)WRITE] = c;
-        printf("W: %c\n",c);
+//        printf("W: %c\n",c);
 //        sleep(1);
         WRITE = (WRITE+1)%MEMORY_SIZE;
 
