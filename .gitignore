@@ -67,6 +67,8 @@ lab01_fifo
 sync
 filecp
 dir
-.cpb
-.depend
-.jpg
+bin
+obj
+*.cpb
+*.depend
+*.jpg
