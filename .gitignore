@@ -69,6 +69,6 @@ filecp
 dir
 bin
 obj
-*.cpb
-*.depend
+*.cbp
+*.layout
 *.jpg
