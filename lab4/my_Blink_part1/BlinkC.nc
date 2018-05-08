@@ -29,6 +29,7 @@ implementation
   {
     count++;
     printf("Here is a uint8: %u\n", count);
+    printfflush();  //推入串口
 
     dbg("BlinkC", "Timer 0 fired @ %s.\n", sim_time_string());
 
