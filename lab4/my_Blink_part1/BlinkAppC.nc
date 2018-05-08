@@ -8,6 +8,7 @@ configuration BlinkAppC
 implementation
 {
   components MainC, BlinkC, LedsC;
+  //timer0是一个组件
   components new TimerMilliC() as Timer0;
 
   //添加printf的组件
