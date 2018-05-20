@@ -12,6 +12,9 @@ implementation
   components new TimerMilliC() as Timer1;
   components new TimerMilliC() as Timer2;
 
+  //添加printf的组件
+  components PrintfC;
+  components SerialStartC;
 
   BlinkC -> MainC.Boot;
 

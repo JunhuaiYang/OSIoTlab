@@ -2,6 +2,7 @@
  实验4.4
  */
 #include "Timer.h"
+#include "printf.h"
 
 module BlinkC @safe()
 {
@@ -39,6 +40,8 @@ task void computeTask()
   {
     dbg("BlinkC", "Timer 0 fired @ %s.\n", sim_time_string());
     call Leds.led0Toggle();
+    printf("timer1\n");
+    printfflush();
     post computeTask();
   }
   
@@ -46,12 +49,16 @@ task void computeTask()
   {
     dbg("BlinkC", "Timer 1 fired @ %s \n", sim_time_string());
     call Leds.led1Toggle();
+    printf("timer2\n");
+    printfflush();
   }
   
   event void Timer2.fired()
   {
     dbg("BlinkC", "Timer 2 fired @ %s.\n", sim_time_string());
     call Leds.led2Toggle();
+    printf("timer3\n");
+    printfflush();
   }
 }
 

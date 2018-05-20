@@ -27,7 +27,7 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-    if((p1=fork()) == -1)  
+    if((p1=fork()) == -1)   //创建子进程1
     {
         printf("Create Child Process 1 failed! \n");
         return -1;
@@ -65,7 +65,7 @@ void Child_1(void)
     char temp[50];
 
     signal(SIGINT, SIG_IGN);  //子进程忽略SIGINT
-    signal(SIGUSR1, My_SIGUSR1);
+    signal(SIGUSR1, My_SIGUSR1);  //设置用户信号量SIGUSR1
 
     while(1)
     {
@@ -85,7 +85,7 @@ void Child_2(void)
     memset(cache,0, sizeof(cache));     //在一段内存块中填充某个特定的值，此为，对cache数组以0进行填充
 
     signal(SIGINT, SIG_IGN);  //子进程忽略SIGINT
-    signal(SIGUSR2, My_SIGUSR2);
+    signal(SIGUSR2, My_SIGUSR2);  //设置用户信号量SIGUSR2
 
     while(1)
     {

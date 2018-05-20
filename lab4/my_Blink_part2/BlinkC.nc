@@ -4,7 +4,6 @@
 #include "Timer.h"
 #include "printf.h"
 
-
 module BlinkC @safe()
 {
   uses interface Timer<TMilli> as Timer0;
@@ -27,11 +26,11 @@ implementation
     int i;
 
     dbg("BlinkC", "Timer 0 fired @ %s.\n", sim_time_string());
-    printf("1");
+    printf("timer1\n");
     printfflush();
     /* 加入计算？  */
-    // for(i=0;i<400001;i++)
-    for(i=0;i<10001;i++)
+    for(i=0;i<400001;i++)
+    // for(i=0;i<10001;i++)
       call Leds.led0Toggle();
     /* 
       大概是因为计算量过大阻塞了进程继续运行 阻塞
@@ -42,7 +41,7 @@ implementation
   event void Timer1.fired()
   {
     dbg("BlinkC", "Timer 1 fired @ %s \n", sim_time_string());
-    printf("2");
+    printf("timer2\n");
     printfflush();
 
     call Leds.led1Toggle();
@@ -50,7 +49,7 @@ implementation
   
   event void Timer2.fired()
   {
-    printf("3");
+    printf("timer3\n");
     printfflush();
     dbg("BlinkC", "Timer 2 fired @ %s.\n", sim_time_string());
     call Leds.led2Toggle();
